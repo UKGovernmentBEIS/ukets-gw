@@ -1,0 +1,60 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <etsgw-page-heading size="l">Your services</etsgw-page-heading>
+
+    <div class="divider"></div>
+
+    @if (pmrvEnabled()) {
+    <a
+      govukLink
+      [href]="appUrls.pmrv"
+      class="govuk-!-font-weight-bold govuk-!-font-size-19"
+    >
+      Manage your UK ETS reporting - Installations/Aviation
+      <svg
+        class="float-right chevron-right"
+        xmlns="http://www.w3.org/2000/svg"
+        width="11"
+        height="13"
+        viewBox="0 0 33 40"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+      </svg>
+    </a>
+    <p class="govuk-body">
+      This service is for operators, regulators and verifiers who carry out
+      activities covered by the UK Emissions Trading Scheme (UK ETS) or the
+      Carbon Offsetting and Reduction Scheme for International Aviation
+      (CORSIA). Installations in Northern Ireland will also use this service for
+      EU ETS reporting.
+    </p>
+
+    <div class="divider govuk-!-margin-bottom-4 govuk-!-margin-top-5"></div>
+    } @if (mrtmEnabled()) {
+    <a
+      govukLink
+      [href]="appUrls.mrtm"
+      class="govuk-!-font-weight-bold govuk-!-font-size-19"
+    >
+      Manage your UK ETS reporting - Maritime
+      <svg
+        class="float-right chevron-right"
+        xmlns="http://www.w3.org/2000/svg"
+        width="11"
+        height="13"
+        viewBox="0 0 33 40"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+      </svg>
+    </a>
+    <p class="govuk-body">
+      This service is for maritime operators, regulators and verifiers who carry
+      out activities covered by the UK Emissions Trading Scheme (UK ETS).
+    </p>
+    }
+  </div>
+</div>

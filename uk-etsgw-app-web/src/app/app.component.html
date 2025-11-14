@@ -1,0 +1,33 @@
+<govuk-header title="Manage your UK ETS reporting">
+  <govuk-skip-link />
+  <govuk-header-actions-list>
+    @if (isLoggedIn()) {
+    <a class="govuk-header__link" routerLink="." (click)="authService.logout()"> Sign out </a>
+    }
+  </govuk-header-actions-list>
+</govuk-header>
+
+<main class="govuk-width-container" id="main-content" role="main">
+  <etsgw-phase-bar></etsgw-phase-bar>
+
+  @if (appService.showHomeBreadcrumb()) {
+  <govuk-breadcrumbs>
+    <a govukLink="breadcrumb" routerLink="../">Home</a>
+  </govuk-breadcrumbs>
+  }
+
+  <div class="govuk-main-wrapper">
+    <router-outlet etsgwSkipLinkFocus></router-outlet>
+  </div>
+</main>
+
+<govuk-footer>
+  <govuk-footer-meta-info>
+    <a govukLink="meta" routerLink="/privacy-notice"> Privacy Νotice </a>
+    <a govukLink="meta" routerLink="/contact-us"> Contact us </a>
+    <a govukLink="meta" routerLink="/accessibility"> Accessibility Statement </a>
+    <a govukLink="meta" routerLink="/legislation"> UK ETS legislation </a>
+  </govuk-footer-meta-info>
+</govuk-footer>
+
+<etsgw-timeout-banner></etsgw-timeout-banner>

@@ -1,0 +1,21 @@
+{
+  "extends": "../../.eslintrc.json",
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": [
+          "projects/etsgw-api/tsconfig.lib.json",
+          "projects/etsgw-api/tsconfig.spec.json"
+        ],
+        "createDefaultProgram": true
+      },
+      "rules": {
+        "no-control-regex": "off",
+        "no-useless-escape": "off",
+        "@typescript-eslint/ban-types": "off"
+      }
+    }
+  ]
+}

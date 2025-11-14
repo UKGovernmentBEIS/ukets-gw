@@ -1,0 +1,281 @@
+<etsgw-service-banner></etsgw-service-banner>
+<div class="govuk-grid-row">
+  @if (wasteEnabled()) {
+    <div class="govuk-grid-column-two-thirds">
+    <etsgw-page-heading>Manage your UK Emissions Trading Scheme reporting</etsgw-page-heading>
+
+    <p class="govuk-body">
+      This service is for operators, regulators and verifiers who carry out activities covered by the UK Emissions
+      Trading Scheme (UK ETS) or the Carbon Offsetting and Reduction Scheme for International Aviation (CORSIA).
+      Installations in Northern Ireland will also use this service for the European Union Emissions Trading System (EU
+      ETS).
+    </p>
+    <p class="govuk-body">
+      This service is also applicable for the Waste Activities Voluntary Scheme for Greenhouse Gas Emissions,
+      although some references and data requests may not be relevant to waste operators.
+    </p>
+
+    <p class="govuk-body">Installation, aircraft, aeroplane and maritime operators should use this service to:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>apply for an emissions monitoring plan or permit</li>
+      <li>manage emissions monitoring plans and permits</li>
+      <li>submit annual reports</li>
+    </ul>
+
+    <p class="govuk-body">
+      Regulators should use this service to assess applications and reports.
+      <br />
+      Verifiers should use this service to verify reports.
+    </p>
+
+    @if (pmrvEnabled()) {
+    <!-- INSTALLATIONS -->
+    <h2 class="govuk-heading-m">Installations</h2>
+
+    <p class="govuk-body">
+      Greenhouse gas emissions (GHGE) operators - see
+      <a
+        govukLink
+        href="https://www.gov.uk/government/publications/uk-emissions-trading-scheme-for-installations-how-to-comply/uk-emissions-trading-scheme-for-installations-how-to-comply"
+        >UK ETS for installations: how to comply</a
+      >
+    </p>
+    <p class="govuk-body">
+      Hospital or small emitter (HSE) operators - see
+      <a
+        govukLink
+        href="https://www.gov.uk/government/publications/uk-emissions-trading-scheme-for-hospital-or-small-emitters-how-to-comply/uk-emissions-trading-scheme-for-hospital-or-small-emitters-how-to-comply"
+        >UK ETS for hospitals or small emitters</a
+      >
+    </p>
+    <p class="govuk-body">
+      Waste Activities Voluntary Scheme for Greenhouse Gas Emissions operators - contact your regulator for further information
+      on how to participate.
+    </p>
+
+    <p class="govuk-body govuk-!-font-weight-bold">I already have a sign in</p>
+    <p class="govuk-body">You'll need your password and two-factor authentication app to sign in to the service.</p>
+    <a class="govuk-button govuk-button--start" routerLink="." (click)="login('pmrv')" draggable="false"> Sign in </a>
+
+    <p class="govuk-body govuk-!-font-weight-bold">I need to create a sign in</p>
+    <p class="govuk-body">You can apply online for a sign in if you are an installation operator.</p>
+    <a class="govuk-button govuk-button--secondary" [href]="pmrvRegistrationUrl"> Create a sign in </a>
+
+    <br /><br /><br />
+
+    <!-- AVIATION -->
+    <h2 class="govuk-heading-m">Aviation</h2>
+
+    <p class="govuk-body">
+      UK ETS aircraft operators - see
+      <a govukLink href="https://www.gov.uk/guidance/uk-emissions-trading-scheme-for-aviation-how-to-comply">
+        UK ETS for aviation: how to comply
+      </a>
+      <br /><br />
+      CORSIA aeroplane operators - see
+      <a govukLink href="https://www.gov.uk/guidance/corsia-how-to-comply"> CORSIA: how to comply </a>
+    </p>
+
+    <p class="govuk-body govuk-!-font-weight-bold">I already have a sign in</p>
+    <p class="govuk-body">You'll need your password and two-factor authentication app to sign in to the service.</p>
+    <a class="govuk-button govuk-button--start" routerLink="." (click)="login('pmrv')" draggable="false"> Sign in </a>
+
+    <p class="govuk-body govuk-!-font-weight-bold">I need to create a sign in</p>
+    <p class="govuk-body">
+      If you need to create a sign in you must
+      <a govukLink [href]="pmrvContactUrl">contact your regulator</a>.
+    </p>
+    }
+
+    <br /><br /><br />
+
+    @if (mrtmEnabled()) {
+    <!-- MARITIME -->
+    <h2 class="govuk-heading-m">Maritime</h2>
+
+    <p class="govuk-body">This service is for reporting emissions from ships over 5,000 gross tonnes.</p>
+    <p class="govuk-body">Contact your regulator for further information on your obligations under the UK ETS.</p>
+
+    <p class="govuk-body govuk-!-font-weight-bold">I already have a sign in</p>
+    <p class="govuk-body">You'll need your password and two-factor authentication app to sign in to the service.</p>
+    <a class="govuk-button govuk-button--start" routerLink="." (click)="login('mrtm')" draggable="false"> Sign in </a>
+
+    <p class="govuk-body govuk-!-font-weight-bold">I need to create a sign in</p>
+    <p class="govuk-body">
+      If you need to create a sign in you must
+      <a govukLink [href]="mrtmContactUrl">contact your regulator</a>.
+    </p>
+    }
+  </div>
+  } @else {
+    <div class="govuk-grid-column-two-thirds">
+      <etsgw-page-heading
+      >Manage your UK Emissions Trading Scheme reporting</etsgw-page-heading
+      >
+
+      <p class="govuk-body">
+        This service is for operators, regulators and verifiers who carry out
+        activities covered by the UK Emissions Trading Scheme (UK ETS) or the
+        Carbon Offsetting and Reduction Scheme for International Aviation
+        (CORSIA). Installations in Northern Ireland will also use this service for
+        the European Union Emissions Trading System (EU ETS).
+        <br />
+        Installation, aircraft, aeroplane and maritime operators should use this
+        service to:
+      </p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>apply for an emissions monitoring plan or permit</li>
+        <li>manage emissions monitoring plans and permits</li>
+        <li>submit annual reports</li>
+      </ul>
+
+      <p class="govuk-body">
+        Regulators should use this service to assess applications and reports.
+        <br />
+        Verifiers should use this service to verify reports.
+      </p>
+
+      @if (pmrvEnabled()) {
+        <!-- INSTALLATIONS -->
+        <h2 class="govuk-heading-m">Installations</h2>
+
+        <p class="govuk-body">
+          Installation operators - see
+          <a
+            govukLink
+            href="https://www.gov.uk/government/publications/uk-emissions-trading-scheme-for-installations-how-to-comply/uk-emissions-trading-scheme-for-installations-how-to-comply"
+          >UK ETS for installations: how to comply</a
+          >
+          or
+          <a
+            govukLink
+            href="https://www.gov.uk/government/publications/uk-emissions-trading-scheme-for-hospital-or-small-emitters-how-to-comply/uk-emissions-trading-scheme-for-hospital-or-small-emitters-how-to-comply"
+          >UK ETS for hospitals or small emitters</a
+          >
+        </p>
+
+        <p class="govuk-body govuk-!-font-weight-bold">I already have a sign in</p>
+        <p class="govuk-body">
+          You'll need your password and two-factor authentication app to sign in to
+          the service.
+        </p>
+        <a
+          class="govuk-button govuk-button--start"
+          routerLink="."
+          (click)="login('pmrv')"
+          draggable="false"
+        >
+          Sign in
+        </a>
+
+        <p class="govuk-body govuk-!-font-weight-bold">
+          I need to create a sign in
+        </p>
+        <p class="govuk-body">
+          You can apply online for a sign in if you are an installation operator.
+        </p>
+        <a
+          class="govuk-button govuk-button--secondary"
+          [href]="pmrvRegistrationUrl"
+        >
+          Create a sign in
+        </a>
+
+        <br /><br /><br />
+
+        <!-- AVIATION -->
+        <h2 class="govuk-heading-m">Aviation</h2>
+
+        <p class="govuk-body">
+          UK ETS aircraft operators - see
+          <a
+            govukLink
+            href="https://www.gov.uk/guidance/uk-emissions-trading-scheme-for-aviation-how-to-comply"
+          >
+            UK ETS for aviation: how to comply
+          </a>
+          <br /><br />
+          CORSIA aeroplane operators - see
+          <a govukLink href="https://www.gov.uk/guidance/corsia-how-to-comply">
+            CORSIA: how to comply
+          </a>
+        </p>
+
+        <p class="govuk-body govuk-!-font-weight-bold">I already have a sign in</p>
+        <p class="govuk-body">
+          You'll need your password and two-factor authentication app to sign in to
+          the service.
+        </p>
+        <a
+          class="govuk-button govuk-button--start"
+          routerLink="."
+          (click)="login('pmrv')"
+          draggable="false"
+        >
+          Sign in
+        </a>
+
+        <p class="govuk-body govuk-!-font-weight-bold">
+          I need to create a sign in
+        </p>
+        <p class="govuk-body">
+          If you need to create a sign in you must
+          <a govukLink [href]="pmrvContactUrl">contact your regulator</a>.
+        </p>
+      }
+
+      <br /><br /><br />
+
+      @if (mrtmEnabled()) {
+        <!-- MARITIME -->
+        <h2 class="govuk-heading-m">Maritime</h2>
+
+        <p class="govuk-body">
+          This service is for reporting emissions from ships over 5,000 gross
+          tonnes.
+        </p>
+        <p class="govuk-body">
+          Contact your regulator for further information on your obligations under
+          the UK ETS.
+        </p>
+
+        <p class="govuk-body govuk-!-font-weight-bold">I already have a sign in</p>
+        <p class="govuk-body">
+          You'll need your password and two-factor authentication app to sign in to
+          the service.
+        </p>
+        <a
+          class="govuk-button govuk-button--start"
+          routerLink="."
+          (click)="login('mrtm')"
+          draggable="false"
+        >
+          Sign in
+        </a>
+
+        <p class="govuk-body govuk-!-font-weight-bold">
+          I need to create a sign in
+        </p>
+        <p class="govuk-body">
+          If you need to create a sign in you must
+          <a govukLink [href]="mrtmContactUrl">contact your regulator</a>.
+        </p>
+      }
+    </div>
+  }
+  <div class="govuk-grid-column-one-third">
+    <etsgw-related-content>
+      <ul class="govuk-list govuk-!-font-size-16 govuk-list--spaced">
+        <li>
+          <a
+            govukLink
+            rel="noreferrer noopener"
+            href="https://www.gov.uk/government/publications/participating-in-the-uk-ets/participating-in-the-uk-ets#registry"
+            >Participating in UK ETS</a
+          >
+        </li>
+      </ul>
+    </etsgw-related-content>
+  </div>
+</div>

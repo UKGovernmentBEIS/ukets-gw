@@ -1,0 +1,15 @@
+{
+  "name": "etsgw-api",
+  "version": "0.0.1",
+  "private": true,
+  "peerDependencies": {
+    "@angular/common": "^17.3.0",
+    "@angular/core": "^17.3.0",
+    "@openapitools/openapi-generator-cli": "^2.13.5",
+    "barrelsby": "^2.2.0",
+    "rimraf": "^3.0.2"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  }
+}
