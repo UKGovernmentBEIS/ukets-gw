@@ -3,7 +3,6 @@ import { NotificationAlertDTO } from '@etsgw/api';
 export const FEATURES = [
   'terms',
   'installationAviationEnabled',
-  'wasteEnabled',
   'maritimeEnabled',
 ] as const;
 export type FeatureName = (typeof FEATURES)[number];

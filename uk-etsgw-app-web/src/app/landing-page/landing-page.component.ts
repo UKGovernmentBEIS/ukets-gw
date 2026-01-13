@@ -34,9 +34,6 @@ export class LandingPageComponent {
   protected pmrvEnabled = this.configStore.select(
     configQuery.selectIsFeatureEnabled('installationAviationEnabled')
   );
-  protected wasteEnabled = this.configStore.select(
-    configQuery.selectIsFeatureEnabled('wasteEnabled')
-  );
   protected mrtmEnabled = this.configStore.select(
     configQuery.selectIsFeatureEnabled('maritimeEnabled')
   );
