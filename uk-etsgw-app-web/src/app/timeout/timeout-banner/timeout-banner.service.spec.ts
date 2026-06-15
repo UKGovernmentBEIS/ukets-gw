@@ -1,19 +1,16 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { firstValueFrom, Subject } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
 
-import {
-  KeycloakEvent,
-  KeycloakEventType,
-  KeycloakService,
-} from 'keycloak-angular';
-import { KeycloakInstance } from 'keycloak-js';
-
-import { AuthService } from '../../core/services/auth.service';
-import { TimeoutBannerService } from './timeout-banner.service';
 import { mockClass, testSchedulerFactory } from '@etsgw/common/testing';
-import { ETSGW_AUTH_SERVICE } from '../../auth.config';
+import Keycloak from 'keycloak-js';
+
+import { ETSGW_KEYCLOAK } from '../../auth.config';
+import { AuthService } from '../../core/services/auth.service';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEvent, KeycloakEventType } from '@etsgw/core/auth/keycloak';
+import { TimeoutBannerService } from './timeout-banner.service';
 
 describe('TimeoutBannerService', () => {
   let service: TimeoutBannerService;
@@ -21,23 +18,26 @@ describe('TimeoutBannerService', () => {
 
   const mockRefreshTokenParsed = { iat: 0, exp: 210 };
   const mockRefreshTokenParsedNoExtension = { iat: 0, exp: 100 };
-  const keycloakEvents$ = new Subject<KeycloakEvent>();
 
-  const keycloakService: Partial<jest.Mocked<KeycloakService>> = {
-    getKeycloakInstance: jest
-      .fn()
-      .mockReturnValue({ refreshTokenParsed: mockRefreshTokenParsed }),
-    keycloakEvents$,
+  const keycloakEventSignal = signal<KeycloakEvent>({ type: KeycloakEventType.Ready });
+
+  const keycloak: Partial<Keycloak> = {
+    refreshTokenParsed: mockRefreshTokenParsed,
     updateToken: jest.fn().mockReturnValue(Promise.resolve(true)),
     logout: jest.fn().mockImplementation(),
   };
+
   const authService = mockClass(AuthService);
 
   beforeEach(() => {
     testScheduler = testSchedulerFactory();
+    keycloak.refreshTokenParsed = mockRefreshTokenParsed;
+    keycloakEventSignal.set({ type: KeycloakEventType.Ready });
+
     TestBed.configureTestingModule({
       providers: [
-        { provide: ETSGW_AUTH_SERVICE, useValue: keycloakService },
+        { provide: ETSGW_KEYCLOAK, useValue: keycloak },
+        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: keycloakEventSignal },
         { provide: AuthService, useValue: authService },
       ],
     });
@@ -52,22 +52,23 @@ describe('TimeoutBannerService', () => {
   //   testScheduler.run(({ cold, expectObservable, flush }) => {
   //     jest.useFakeTimers();
   //     jest.setSystemTime(testScheduler.now());
-  //     cold('-a- 200s', { a: { type: KeycloakEventType.OnAuthRefreshSuccess } }).subscribe((event) => {
+  //     cold('-a- 200s', { a: { type: KeycloakEventType.AuthRefreshSuccess } }).subscribe((event) => {
   //       jest.setSystemTime(testScheduler.now());
-  //       keycloakService.keycloakEvents$.next(event);
+  //       keycloakEventSignal.set(event);
+  //       TestBed.flushEffects();
   //     });
   //     expectObservable(service.isVisible$).toBe('a 89s 999ms b 119s 999ms a', { a: false, b: true });
   //
   //     flush();
   //
-  //     expect(keycloakService.logout).toHaveBeenCalled();
+  //     expect(authService.logout).toHaveBeenCalled();
   //   });
   // });
 
   it('should extend time session', async () => {
     await service.extendSession();
 
-    expect(keycloakService.updateToken).toHaveBeenCalled();
+    expect(keycloak.updateToken).toHaveBeenCalled();
     await expect(firstValueFrom(service.isVisible$)).resolves.toBeFalsy();
   });
 
@@ -75,14 +76,13 @@ describe('TimeoutBannerService', () => {
     testScheduler.run(({ cold, expectObservable }) => {
       jest.useFakeTimers();
       jest.setSystemTime(testScheduler.now());
-      keycloakService.getKeycloakInstance.mockReturnValue({
-        refreshTokenParsed: mockRefreshTokenParsedNoExtension,
-      } as KeycloakInstance);
+      keycloak.refreshTokenParsed = mockRefreshTokenParsedNoExtension;
       cold('-a- 200s', {
-        a: { type: KeycloakEventType.OnAuthRefreshSuccess },
+        a: { type: KeycloakEventType.AuthRefreshSuccess },
       }).subscribe((event) => {
         jest.setSystemTime(testScheduler.now());
-        keycloakService.keycloakEvents$.next(event);
+        keycloakEventSignal.set(event);
+        TestBed.flushEffects();
       });
       expectObservable(service.timeExtensionAllowed$).toBe('ab', {
         a: true,

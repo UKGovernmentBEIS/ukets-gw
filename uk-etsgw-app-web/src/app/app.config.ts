@@ -1,81 +1,56 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
-import { routes } from './app.routes';
-import { ConfigService } from '@etsgw/core/config/config.service';
 import { firstValueFrom } from 'rxjs';
+
+import { ConfigService } from '@etsgw/core/config/config.service';
+import { AuthService } from '@etsgw/core/services/auth.service';
+import Keycloak from 'keycloak-js';
+
+import { getKeycloakInitOptions } from '../environments/env-utils';
+import { routes } from './app.routes';
 import {
-  ETSGW_AUTH_SERVICE,
-  MRTM_AUTH_SERVICE,
-  PMRV_AUTH_SERVICE,
+  ETSGW_KEYCLOAK,
+  keycloakConfigs,
+  MRTM_KEYCLOAK,
+  PMRV_KEYCLOAK,
   provideAuthClientConfig,
 } from './auth.config';
-import { AuthService } from '@etsgw/core/services/auth.service';
-import { KeycloakOptions, KeycloakService } from 'keycloak-angular';
-import { KeycloakConfig } from 'keycloak-js';
-import { produce } from 'immer';
-import { getKeycloakOptions } from '../environments/env-utils';
-import { provideHttpClient } from '@angular/common/http';
+import { bearerTokenInterceptor } from './core/auth/keycloak';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([bearerTokenInterceptor])),
     provideAuthClientConfig(),
     {
       provide: APP_INITIALIZER,
       multi: true,
       useFactory: initApp,
-      deps: [
-        ConfigService,
-        AuthService,
-        ETSGW_AUTH_SERVICE,
-        PMRV_AUTH_SERVICE,
-        MRTM_AUTH_SERVICE,
-      ],
+      deps: [ConfigService, AuthService, ETSGW_KEYCLOAK, PMRV_KEYCLOAK, MRTM_KEYCLOAK],
     },
   ],
 };
 
-function insertServerUrlToKeycloakOptions(
-  options: KeycloakOptions,
-  serverUrl: string
-): KeycloakOptions {
-  return produce(options, (o) => {
-    (o.config as KeycloakConfig).url = serverUrl;
-  });
-}
-
 export function initApp(
   configService: ConfigService,
   authService: AuthService,
-  etsgwAuthService: KeycloakService,
-  pmrvAuthService: KeycloakService,
-  mrtmAuthService: KeycloakService
+  etsgwKeycloak: Keycloak,
+  pmrvKeycloak: Keycloak,
+  mrtmKeycloak: Keycloak,
 ) {
   return async () => {
-    const { keycloakServerUrl } = await firstValueFrom(
-      configService.initConfigState()
-    );
+    const { keycloakServerUrl } = await firstValueFrom(configService.initConfigState());
+
+    keycloakConfigs.etsgw.url = keycloakServerUrl;
+    keycloakConfigs.pmrv.url = keycloakServerUrl;
+    keycloakConfigs.mrtm.url = keycloakServerUrl;
+
     await Promise.all([
-      etsgwAuthService.init(
-        insertServerUrlToKeycloakOptions(
-          getKeycloakOptions('etsgw'),
-          keycloakServerUrl
-        )
-      ),
-      pmrvAuthService.init(
-        insertServerUrlToKeycloakOptions(
-          getKeycloakOptions('pmrv'),
-          keycloakServerUrl
-        )
-      ),
-      mrtmAuthService.init(
-        insertServerUrlToKeycloakOptions(
-          getKeycloakOptions('mrtm'),
-          keycloakServerUrl
-        )
-      ),
+      etsgwKeycloak.init(getKeycloakInitOptions('etsgw')),
+      pmrvKeycloak.init(getKeycloakInitOptions('pmrv')),
+      mrtmKeycloak.init(getKeycloakInitOptions('mrtm')),
     ]);
 
     return await firstValueFrom(authService.checkUser());

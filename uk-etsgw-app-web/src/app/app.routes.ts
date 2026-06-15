@@ -1,23 +1,26 @@
-import { CanActivateFn, Router, Routes } from '@angular/router';
-import { VersionComponent } from './version/version.component';
-import { TimedOutComponent } from './timeout/timed-out/timed-out.component';
 import { inject } from '@angular/core';
-import { AuthService } from '@etsgw/core/services/auth.service';
-import { AuthStore, selectIsLoggedIn } from '@etsgw/core/auth';
+import { CanActivateFn, Router, Routes } from '@angular/router';
+
 import { first, map } from 'rxjs';
-import { LandingPageComponent } from './landing-page';
-import { DashboardComponent } from './dashboard';
-import { ETSGW_AUTH_SERVICE } from './auth.config';
+
 import { PageNotFoundComponent } from '@etsgw/common/components';
-import { PrivacyNoticeComponent } from './privacy-notice';
-import { ContactUsComponent } from './contact-us';
+import { AuthStore, selectIsLoggedIn } from '@etsgw/core/auth';
+import { AuthService } from '@etsgw/core/services/auth.service';
+
 import { AccessibilityComponent } from './accessibility';
+import { ETSGW_KEYCLOAK } from './auth.config';
+import { ContactUsComponent } from './contact-us';
+import { DashboardComponent } from './dashboard';
+import { LandingPageComponent } from './landing-page';
 import { LegislationComponent } from './legislation';
+import { PrivacyNoticeComponent } from './privacy-notice';
+import { TimedOutComponent } from './timeout/timed-out/timed-out.component';
+import { VersionComponent } from './version/version.component';
 
 const authGuard: CanActivateFn = () => {
-  const authClient = inject(ETSGW_AUTH_SERVICE);
+  const keycloak = inject(ETSGW_KEYCLOAK);
   const router = inject(Router);
-  return authClient.isLoggedIn() || router.parseUrl('landing');
+  return !!keycloak.authenticated || router.parseUrl('landing');
 };
 
 const nonAuthGuard: CanActivateFn = () => {

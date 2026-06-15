@@ -1,49 +1,43 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
-import { mockClass } from '@etsgw/common/testing';
-import { KeycloakService } from 'keycloak-angular';
-
-import { AuthService } from './auth.service';
-import {
-  AuthStore,
-  selectIsLoggedIn,
-  selectUser,
-  selectUserProfile,
-} from '@etsgw/core/auth';
+import { AuthStore, selectIsLoggedIn, selectUser, selectUserProfile } from '@etsgw/core/auth';
 import { ConfigStore } from '@etsgw/core/config/config.store';
-import { UsersService } from '@etsgw/api';
-import {
-  ETSGW_AUTH_SERVICE,
-  MRTM_AUTH_SERVICE,
-  PMRV_AUTH_SERVICE,
-} from '../../auth.config';
+import Keycloak from 'keycloak-js';
+
+import { ETSGW_KEYCLOAK, MRTM_KEYCLOAK, PMRV_KEYCLOAK } from '../../auth.config';
+import { KEYCLOAK_EVENT_SIGNAL } from '../auth/keycloak';
+import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let authStore: AuthStore;
   let configStore: ConfigStore;
 
-  const etsgwKeycloakService = mockClass(KeycloakService);
-  const pmrvKeycloakService = mockClass(KeycloakService);
-  const mrtmKeycloakService = mockClass(KeycloakService);
-
-  const user = {
-    email: 'test@test.com',
-    firstName: 'test',
-    lastName: 'test',
-    termsVersion: 1,
+  const etsgwKeycloak: Partial<Keycloak> = {
+    login: jest.fn(),
+    logout: jest.fn().mockResolvedValue(undefined),
+    loadUserProfile: jest.fn(),
+    authenticated: false,
+  };
+  const pmrvKeycloak: Partial<Keycloak> = {
+    login: jest.fn(),
+  };
+  const mrtmKeycloak: Partial<Keycloak> = {
+    login: jest.fn(),
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [
-        { provide: ETSGW_AUTH_SERVICE, useValue: etsgwKeycloakService },
-        { provide: PMRV_AUTH_SERVICE, useValue: pmrvKeycloakService },
-        { provide: MRTM_AUTH_SERVICE, useValue: mrtmKeycloakService },
+        { provide: ETSGW_KEYCLOAK, useValue: etsgwKeycloak },
+        { provide: PMRV_KEYCLOAK, useValue: pmrvKeycloak },
+        { provide: MRTM_KEYCLOAK, useValue: mrtmKeycloak },
+        { provide: KEYCLOAK_EVENT_SIGNAL, useValue: signal({ type: 'Ready' }) },
       ],
     });
 
@@ -52,9 +46,7 @@ describe('AuthService', () => {
     configStore.setState({ features: { terms: true } });
 
     service = TestBed.inject(AuthService);
-    etsgwKeycloakService.loadUserProfile.mockResolvedValue({
-      email: 'test@test.com',
-    });
+    (etsgwKeycloak.loadUserProfile as jest.Mock).mockResolvedValue({ email: 'test@test.com' });
   });
 
   afterEach(() => {
@@ -68,59 +60,41 @@ describe('AuthService', () => {
   it('should login', async () => {
     await service.login('etsgw');
 
-    expect(etsgwKeycloakService.login).toHaveBeenCalledTimes(1);
-    expect(etsgwKeycloakService.login).toHaveBeenCalledWith({});
+    expect(etsgwKeycloak.login).toHaveBeenCalledTimes(1);
+    expect(etsgwKeycloak.login).toHaveBeenCalledWith({});
   });
 
   it('should logout', async () => {
     await service.logout();
-    expect(etsgwKeycloakService.logout).toHaveBeenCalled();
+    expect(etsgwKeycloak.logout).toHaveBeenCalled();
   });
 
   it('should update all user info when checkUser is called', async () => {
-    etsgwKeycloakService.isLoggedIn.mockReturnValueOnce(false);
+    etsgwKeycloak.authenticated = false;
 
     await expect(firstValueFrom(service.checkUser())).resolves.toBeUndefined();
 
     await expect(
-      firstValueFrom(
-        TestBed.runInInjectionContext(() =>
-          authStore.rxSelect(selectIsLoggedIn)
-        )
-      )
+      firstValueFrom(TestBed.runInInjectionContext(() => authStore.rxSelect(selectIsLoggedIn))),
     ).resolves.toBeFalsy();
     await expect(
-      firstValueFrom(
-        TestBed.runInInjectionContext(() => authStore.rxSelect(selectUser))
-      )
+      firstValueFrom(TestBed.runInInjectionContext(() => authStore.rxSelect(selectUser))),
     ).resolves.toBeNull();
     await expect(
-      firstValueFrom(
-        TestBed.runInInjectionContext(() =>
-          authStore.rxSelect(selectUserProfile)
-        )
-      )
+      firstValueFrom(TestBed.runInInjectionContext(() => authStore.rxSelect(selectUserProfile))),
     ).resolves.toBeNull();
 
     authStore.setIsLoggedIn(null);
-    etsgwKeycloakService.isLoggedIn.mockReturnValueOnce(true);
+    etsgwKeycloak.authenticated = true;
 
     await expect(firstValueFrom(service.checkUser())).resolves.toBeUndefined();
 
     await expect(
-      firstValueFrom(
-        TestBed.runInInjectionContext(() =>
-          authStore.rxSelect(selectIsLoggedIn)
-        )
-      )
+      firstValueFrom(TestBed.runInInjectionContext(() => authStore.rxSelect(selectIsLoggedIn))),
     ).resolves.toBeTruthy();
 
     await expect(
-      firstValueFrom(
-        TestBed.runInInjectionContext(() =>
-          authStore.rxSelect(selectUserProfile)
-        )
-      )
+      firstValueFrom(TestBed.runInInjectionContext(() => authStore.rxSelect(selectUserProfile))),
     ).resolves.toEqual({ email: 'test@test.com' });
   });
 });

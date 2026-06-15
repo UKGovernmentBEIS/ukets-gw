@@ -1,24 +1,22 @@
-import { Inject, Injectable } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 
-import {
-  BehaviorSubject,
-  EMPTY,
-  filter,
-  map,
-  switchMap,
-  tap,
-  timer,
-} from 'rxjs';
+import { BehaviorSubject, EMPTY, switchMap, tap, timer } from 'rxjs';
+
+import { AuthService } from '@etsgw/core/services/auth.service';
+import Keycloak from 'keycloak-js';
 
 import { environment } from '../../../environments/environment';
-import { AuthService } from '@etsgw/core/services/auth.service';
-import { ETSGW_AUTH_SERVICE } from '../../auth.config';
-import { KeycloakEventType, KeycloakService } from 'keycloak-angular';
+import { ETSGW_KEYCLOAK } from '../../auth.config';
+import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType } from '@etsgw/core/auth/keycloak';
 
 @Injectable({ providedIn: 'root' })
 export class TimeoutBannerService {
+  private readonly etsgwKeycloak = inject<Keycloak>(ETSGW_KEYCLOAK);
+  private readonly authService = inject(AuthService);
+  private readonly keycloakEventSignal = inject(KEYCLOAK_EVENT_SIGNAL);
+
   private get refreshTokenParsed() {
-    return this.etsgwAuthService.getKeycloakInstance()?.refreshTokenParsed;
+    return this.etsgwKeycloak.refreshTokenParsed;
   }
 
   private get refreshTokenParsedExp() {
@@ -41,47 +39,31 @@ export class TimeoutBannerService {
   countDownTime$ = new BehaviorSubject<number>(this.calculateCountdownTime());
   private initialRefreshTokenExpOffset = this.refreshTokenExpOffset;
 
-  constructor(
-    private readonly authService: AuthService,
-    @Inject(ETSGW_AUTH_SERVICE)
-    private readonly etsgwAuthService: KeycloakService
-  ) {
-    this.etsgwAuthService.keycloakEvents$
-      .pipe(
-        map((event) => event?.type),
-        filter((eventType) =>
-          [
-            KeycloakEventType.OnAuthRefreshSuccess,
-            KeycloakEventType.OnAuthLogout,
-          ].includes(eventType)
-        )
-      )
-      .subscribe((eventType) => {
-        switch (eventType) {
-          case KeycloakEventType.OnAuthRefreshSuccess:
-            this.countDownTime$.next(this.calculateCountdownTime());
-            console.log('Countdown restarted');
+  constructor() {
+    effect(() => {
+      const event = this.keycloakEventSignal();
 
-            if (
-              this.refreshTokenExpOffset < this.initialRefreshTokenExpOffset
-            ) {
-              this.timeExtensionAllowed$.next(false);
-            }
-            break;
-          case KeycloakEventType.OnAuthLogout:
-            this.idleLogout();
-            break;
-        }
-      });
+      switch (event?.type) {
+        case KeycloakEventType.AuthRefreshSuccess:
+          this.countDownTime$.next(this.calculateCountdownTime());
+          console.log('Countdown restarted');
+
+          if (this.refreshTokenExpOffset < this.initialRefreshTokenExpOffset) {
+            this.timeExtensionAllowed$.next(false);
+          }
+          break;
+        case KeycloakEventType.AuthLogout:
+          this.idleLogout();
+          break;
+      }
+    });
 
     this.countDownTime$
       .pipe(
         tap((cd) => console.log('Countdown:', cd)),
         switchMap((countDownTime) => {
-          return countDownTime > 0
-            ? timer(countDownTime).pipe(tap(() => this.isVisible$.next(true)))
-            : EMPTY;
-        })
+          return countDownTime > 0 ? timer(countDownTime).pipe(tap(() => this.isVisible$.next(true))) : EMPTY;
+        }),
       )
       .subscribe();
 
@@ -93,20 +75,16 @@ export class TimeoutBannerService {
                 tap(() => {
                   this.isVisible$.next(false);
                   this.idleLogout();
-                })
+                }),
               )
-            : EMPTY
-        )
+            : EMPTY,
+        ),
       )
       .subscribe();
   }
 
   extendSession() {
-    if (this.etsgwAuthService.getKeycloakInstance()) {
-      this.etsgwAuthService
-        .updateToken(-1)
-        .then(() => this.isVisible$.next(false));
-    }
+    return this.etsgwKeycloak.updateToken(-1).then(() => this.isVisible$.next(false));
   }
 
   signOut() {
@@ -120,10 +98,6 @@ export class TimeoutBannerService {
   }
 
   private calculateCountdownTime(): number {
-    return (
-      this.refreshTokenParsedExp * 1000 -
-      Date.now() -
-      this.timeOffsetSeconds * 1000
-    );
+    return this.refreshTokenParsedExp * 1000 - Date.now() - this.timeOffsetSeconds * 1000;
   }
 }
