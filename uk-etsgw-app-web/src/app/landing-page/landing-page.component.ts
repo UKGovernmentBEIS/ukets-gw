@@ -32,14 +32,12 @@ export class LandingPageComponent {
   private route = inject(ActivatedRoute);
 
   protected pmrvEnabled = this.configStore.select(
-    configQuery.selectIsFeatureEnabled('installationAviationEnabled')
+    configQuery.selectIsFeatureEnabled('installationAviationEnabled'),
   );
   protected mrtmEnabled = this.configStore.select(
-    configQuery.selectIsFeatureEnabled('maritimeEnabled')
+    configQuery.selectIsFeatureEnabled('maritimeEnabled'),
   );
   protected pmrvRegistrationUrl = `${environment.appUrls.pmrv}registration`;
-  protected pmrvContactUrl = `${environment.appUrls.pmrv}contact-us`;
-  protected mrtmContactUrl = `${environment.appUrls.mrtm}contact-us`;
 
   async login(client: ClientType) {
     const appRedirectPath =
