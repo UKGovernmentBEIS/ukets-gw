@@ -16,6 +16,7 @@ yarn lint                     # ESLint (ng lint)
 ```
 
 **Tests (Jest, not Karma):**
+
 ```bash
 yarn test:frontend            # Run all app tests
 yarn test:frontend -- --testPathPattern=dashboard  # Run tests matching a pattern
@@ -24,6 +25,7 @@ yarn test:frontend:coverage   # With coverage
 ```
 
 **Library builds (must build before app tests or dev server):**
+
 ```bash
 yarn build:govuk-components   # Build the GOV.UK component library
 yarn build:etsgw-api          # Build the generated API client
@@ -31,6 +33,7 @@ yarn prebuild                 # Both of the above
 ```
 
 **API client regeneration from OpenAPI spec:**
+
 ```bash
 yarn generate:api             # Regenerate from projects/etsgw-api/src/assets/swagger.yaml
 ```
@@ -50,6 +53,7 @@ Libraries are consumed via path aliases: `@etsgw/govuk-components`, `@etsgw/api`
 ### Path Aliases
 
 Defined in `tsconfig.json`, also mirrored in `jest.config.js` moduleNameMapper:
+
 - `@etsgw/govuk-components` -> `dist/govuk-components`
 - `@etsgw/api` -> `dist/etsgw-api`
 - `@etsgw/common/*` -> `src/app/common/*`
@@ -64,8 +68,12 @@ Custom signal-based store (`src/app/core/store/signal-store.ts`), not NgRx. Uses
 Uses `keycloak-js 26` directly (no `keycloak-angular` wrapper). Three `Keycloak` instances injected via tokens (`ETSGW_KEYCLOAK`, `PMRV_KEYCLOAK`, `MRTM_KEYCLOAK` in `auth.config.ts`). All connect to the `uk-pmrv` realm with different client IDs. The ETSGW client uses `check-sso` on load; others initialize silently. Keycloak server URL is fetched at runtime from the backend config endpoint.
 
 Local utilities in `src/app/core/auth/keycloak/` replace what `keycloak-angular` previously provided:
+
 - `keycloak-event.ts` — `KeycloakEventType` enum, `KEYCLOAK_EVENT_SIGNAL` injection token, `createKeycloakSignal()` (wires Keycloak callbacks to an Angular `WritableSignal`)
 - `bearer-token.interceptor.ts` — `HttpInterceptorFn` that attaches bearer tokens for the ETSGW instance
+- `history-preserving-browser.adapter.ts` — browser adapter that replaces the current history entry during automatic `check-sso`, while retaining normal navigation for interactive authentication
+
+Initialize the ETSGW client before the PMRV and MRTM clients so it consumes its OAuth callback state first. The downstream clients can then initialize in parallel.
 
 ### Routing
 

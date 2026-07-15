@@ -10,14 +10,8 @@ import Keycloak from 'keycloak-js';
 
 import { getKeycloakInitOptions } from '../environments/env-utils';
 import { routes } from './app.routes';
-import {
-  ETSGW_KEYCLOAK,
-  keycloakConfigs,
-  MRTM_KEYCLOAK,
-  PMRV_KEYCLOAK,
-  provideAuthClientConfig,
-} from './auth.config';
-import { bearerTokenInterceptor } from './core/auth/keycloak';
+import { ETSGW_KEYCLOAK, keycloakConfigs, MRTM_KEYCLOAK, PMRV_KEYCLOAK, provideAuthClientConfig } from './auth.config';
+import { bearerTokenInterceptor, createHistoryPreservingBrowserAdapter } from './core/auth/keycloak';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -47,8 +41,12 @@ export function initApp(
     keycloakConfigs.pmrv.url = keycloakServerUrl;
     keycloakConfigs.mrtm.url = keycloakServerUrl;
 
+    await etsgwKeycloak.init({
+      ...getKeycloakInitOptions('etsgw'),
+      adapter: createHistoryPreservingBrowserAdapter(etsgwKeycloak),
+    });
+
     await Promise.all([
-      etsgwKeycloak.init(getKeycloakInitOptions('etsgw')),
       pmrvKeycloak.init(getKeycloakInitOptions('pmrv')),
       mrtmKeycloak.init(getKeycloakInitOptions('mrtm')),
     ]);
