@@ -24,7 +24,7 @@ $govuk-suppressed-warnings: ie8;
 $govuk-image-url-function: 'image-url';
 $govuk-font-url-function: 'font-url';
 
-@import 'govuk/all';
+@import 'govuk/index';
 @import 'theming/tables';
 @import 'theming/task-list';
 @import 'theming/lists';

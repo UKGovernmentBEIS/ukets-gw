@@ -1,16 +1,18 @@
-import { NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'govuk-phase-banner',
+  imports: [],
   standalone: true,
-  imports: [NgIf],
   templateUrl: './phase-banner.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './phase-banner.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PhaseBannerComponent {
-  @Input() phase: string;
-  @Input() tagColor: string;
-  @Input() tagAlign: 'right' | 'left' = 'left';
+  readonly phase = input<string>();
+  readonly tagColor = input<string>();
+  readonly tagAlign = input<'right' | 'left'>('left');
+
+  /** Moves the dividing line to the top edge, for a banner placed at the bottom of the page. */
+  readonly borderTop = input(false, { transform: booleanAttribute });
 }

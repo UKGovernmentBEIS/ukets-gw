@@ -1,33 +1,28 @@
-<govuk-header title="Manage your UK ETS reporting">
-  <govuk-skip-link />
-  <govuk-header-actions-list>
+<govuk-skip-link />
+
+<header>
+  <govuk-header>
     @if (isLoggedIn()) {
-    <a class="govuk-header__link" routerLink="." (click)="authService.logout()"> Sign out </a>
+      <button type="button" class="link-button govuk-link--inverse" (click)="authService.logout()">Sign out</button>
     }
-  </govuk-header-actions-list>
-</govuk-header>
+  </govuk-header>
+  <govuk-service-navigation serviceName="Manage your UK ETS reporting" [serviceHomepage]="{ routerLink: '/' }" />
+</header>
 
-<main class="govuk-width-container" id="main-content" role="main">
-  <etsgw-phase-bar></etsgw-phase-bar>
-
+<div class="govuk-width-container">
   @if (appService.showHomeBreadcrumb()) {
-  <govuk-breadcrumbs>
-    <a govukLink="breadcrumb" routerLink="../">Home</a>
-  </govuk-breadcrumbs>
+    <govuk-breadcrumbs>
+      <a govukLink="breadcrumb" routerLink="../">Home</a>
+    </govuk-breadcrumbs>
   }
+  <main class="govuk-main-wrapper" id="main-content" role="main">
+    <router-outlet />
+  </main>
+  <etsgw-phase-bar />
+</div>
 
-  <div class="govuk-main-wrapper">
-    <router-outlet etsgwSkipLinkFocus></router-outlet>
-  </div>
-</main>
+<footer>
+  <govuk-footer [meta]="footerMetaLinks" />
+</footer>
 
-<govuk-footer>
-  <govuk-footer-meta-info>
-    <a govukLink="meta" routerLink="/privacy-notice"> Privacy Νotice </a>
-    <a govukLink="meta" routerLink="/contact-us"> Contact us </a>
-    <a govukLink="meta" routerLink="/accessibility"> Accessibility Statement </a>
-    <a govukLink="meta" routerLink="/legislation"> UK ETS legislation </a>
-  </govuk-footer-meta-info>
-</govuk-footer>
-
-<etsgw-timeout-banner></etsgw-timeout-banner>
+<etsgw-timeout-banner />

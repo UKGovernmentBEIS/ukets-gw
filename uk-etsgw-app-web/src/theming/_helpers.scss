@@ -1,6 +1,7 @@
 /**
 Helper classes that were not covered through govuk-components
  */
+@use 'govuk-frontend/dist/govuk/index' as govuk;
 
 .pre-wrap {
   white-space: pre-wrap;
@@ -48,4 +49,47 @@ a[role="button"] {
 .highlight-error {
   color: $govuk-error-colour;
   font-weight: bold;
+}
+
+/**
+ * Styles an action <button> to look like a GOV.UK link. The colour states are
+ * set explicitly because govuk-link-style-no-visited-state scopes them under
+ * :link/:visited, which never match a button element.
+ */
+.link-button {
+  @include govuk.govuk-link-common;
+
+  padding: 0;
+  border: 0;
+  background: none;
+  color: govuk.govuk-functional-colour(link);
+  cursor: pointer;
+  font-size: inherit;
+  line-height: inherit;
+
+  &:hover {
+    color: govuk.govuk-functional-colour(link-hover);
+  }
+
+  &:active {
+    color: govuk.govuk-functional-colour(link-active);
+  }
+
+  &:focus {
+    color: govuk.govuk-functional-colour(focus-text);
+  }
+
+  // Mirrors govuk-link-style-inverse for buttons: like an inverse anchor, the
+  // colour stays inverse-text in every state except focus
+  &.govuk-link--inverse {
+    &,
+    &:hover,
+    &:active {
+      color: govuk.govuk-functional-colour(inverse-text);
+    }
+
+    &:focus {
+      color: govuk.govuk-functional-colour(focus-text);
+    }
+  }
 }

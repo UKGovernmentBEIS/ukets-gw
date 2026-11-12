@@ -1,36 +1,35 @@
-The header components are designed to add header content to a full screen app.
-To set up a govuk header we use four components:
+## Header
 
-1. `<govuk-header>` which acts as a structural container for our content and navigation.
-2. `<govuk-header-nav-list>` which represents the navigation of the application.
-3. `<govuk-header-actions-list>` which represents the actions aligned to the right.
-4. `<govuk-skip-link>` which represents the skip link for keyboard users.
+The GOV.UK header component tells users they’re using a service on GOV.UK and lets them use GOV.UK-wide tools.
+Also known as the GOV.UK masthead.
 
-### Specifying the service name and navigation
+The blue brand-coloured bar carries the GOV.UK logo only — service names and navigation belong in the
+`govuk-service-navigation` component rendered below it. The host element carries the `govuk-header`
+class; the page template is responsible for wrapping the header area in the `<header>` landmark
+element.
 
-To define the service name you can use a title input property. The navigation should be placed inside `<govuk-header>`.
-The `logoSvg` property can be used to set the logo SVG of the application. Usually the
-`govuk-header-logotype-crown.svg`.
+Projected content is rendered in the actions area (`govuk-header__actions`) on the right-hand side
+of the bar, expected to hold the "Change service" and "Sign out" links. A vertical divider is drawn
+between adjacent links automatically, outside the links' own boxes so the focus state highlights
+only the link itself.
 
-The navigation should be wrapped in a `<govuk-header-nav-list>`. The `identifier` property can be used
-to add id attribute to the navigation list. The `ariaLabel` property can be used to add aria-label
-attribute to the navigation list. The `menuButtonAriaLabel` property can be used to add aria-label
-to the menu button which can be found in smaller screens where the navigation is not visible.
+Design details can be found at [GOV.UK Design System](https://design-system.service.gov.uk/components/header/).
 
-The actions should be wrapped in a `<govuk-header-actions-list>`.
+### Inputs
 
-The `govukLink` directive is required with input `header` for every link inside the `<govuk-header-nav-list>` container
-in order to apply the required styling.
+- `homepage` — where the GOV.UK logo links to (`GovukLinkTarget`): `routerLink` for in-app
+  navigation, `href` for anything that leaves the app. Defaults to `//gov.uk`.
+- `productName` — the name of the product, shown next to the logo.
+- `containerClasses` — classes for the inner container. Defaults to `govuk-width-container`.
 
-The following is an example of a valid header container:
+### Examples
 
 ```html
-<govuk-header title="NETZ">
-  <govuk-header-actions-list>
-    <a class="govuk-header__link">Profile</a>
-  </govuk-header-actions-list>
-  <govuk-header-nav-list identifier="navigation" ariaLabel="Top Level Navigation">
-    <a govukLink="header" href="/"> Home </a>
-  </govuk-header-nav-list>
-</govuk-header>
+<header>
+  <govuk-header [homepage]="{ href: 'https://www.gov.uk' }" productName="Service Name">
+    <a govukLink class="govuk-link--inverse" [href]="serviceGatewayUrl">Change service</a>
+    <a govukLink class="govuk-link--inverse" routerLink (click)="logout($event)">Sign out</a>
+  </govuk-header>
+  <govuk-service-navigation serviceName="Service Name" [navigation]="navigationItems()" />
+</header>
 ```

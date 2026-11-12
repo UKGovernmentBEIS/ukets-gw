@@ -24,15 +24,16 @@ import { ErrorMessageComponent } from './error-message';
 import { ErrorSummaryComponent } from './error-summary';
 import { FieldsetDirective, FieldsetHintDirective, LegendDirective } from './fieldset';
 import { FileUploadComponent } from './file-upload';
-import { FooterComponent, FooterNavListComponent, MetaInfoComponent } from './footer';
+import { GovukFooterComponent } from './footer';
 import { FormBuilderService } from './form/form-builder.service';
-import { HeaderActionsListComponent, HeaderComponent, HeaderNavListComponent } from './header';
+import { GovukHeaderComponent} from './header';
 import { NotificationBannerComponent } from './notification-banner';
 import { PanelComponent } from './panel';
 import { PhaseBannerComponent } from './phase-banner';
 import { RadioComponent, RadioOptionComponent } from './radio';
 import { SelectComponent } from './select';
-import { SkipLinkComponent } from './skip-link';
+import { GovukServiceNavigationComponent } from './service-navigation';
+import { GovukSkipLinkComponent } from './skip-link';
 import {
   SummaryListColumnActionsDirective,
   SummaryListColumnDirective,
@@ -72,18 +73,16 @@ import { WarningTextComponent } from './warning-text';
     FieldsetDirective,
     FieldsetHintDirective,
     FileUploadComponent,
-    FooterComponent,
-    FooterNavListComponent,
     FormErrorDirective,
-    HeaderActionsListComponent,
-    HeaderComponent,
-    HeaderNavListComponent,
+    GovukFooterComponent,
+    GovukHeaderComponent,
+    GovukServiceNavigationComponent,
+    GovukSkipLinkComponent,
     HttpClientModule,
     InsetTextDirective,
     LabelDirective,
     LegendDirective,
     LinkDirective,
-    MetaInfoComponent,
     NotificationBannerComponent,
     PanelComponent,
     PhaseBannerComponent,
@@ -92,7 +91,6 @@ import { WarningTextComponent } from './warning-text';
     ReactiveFormsModule,
     RouterModule,
     SelectComponent,
-    SkipLinkComponent,
     SummaryListColumnActionsDirective,
     SummaryListColumnDirective,
     SummaryListColumnKeyDirective,
@@ -130,24 +128,21 @@ import { WarningTextComponent } from './warning-text';
     FieldsetDirective,
     FieldsetHintDirective,
     FileUploadComponent,
-    FooterComponent,
-    FooterNavListComponent,
     FormErrorDirective,
-    HeaderActionsListComponent,
-    HeaderComponent,
-    HeaderNavListComponent,
+    GovukFooterComponent,
+    GovukHeaderComponent,
+    GovukServiceNavigationComponent,
+    GovukSkipLinkComponent,
     InsetTextDirective,
     LabelDirective,
     LegendDirective,
     LinkDirective,
-    MetaInfoComponent,
     NotificationBannerComponent,
     PanelComponent,
     PhaseBannerComponent,
     RadioComponent,
     RadioOptionComponent,
     SelectComponent,
-    SkipLinkComponent,
     SummaryListComponent,
     SummaryListRowActionsDirective,
     SummaryListRowDirective,

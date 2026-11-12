@@ -1,6 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
 import { firstValueFrom } from 'rxjs';
 
@@ -15,7 +15,7 @@ import { bearerTokenInterceptor, createHistoryPreservingBrowserAdapter } from '.
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' })),
     provideHttpClient(withInterceptors([bearerTokenInterceptor])),
     provideAuthClientConfig(),
     {

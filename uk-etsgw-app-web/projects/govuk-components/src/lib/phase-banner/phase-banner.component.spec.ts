@@ -8,9 +8,11 @@ describe('PhaseBannerComponent', () => {
   let fixture: ComponentFixture<TestComponent>;
 
   @Component({
-    standalone: true,
     imports: [PhaseBannerComponent],
-    template: ` <govuk-phase-banner [phase]="phase">Test content</govuk-phase-banner> `,
+    standalone: true,
+    template: `
+      <govuk-phase-banner [phase]="phase">Test content</govuk-phase-banner>
+    `,
   })
   class TestComponent {
     phase = 'alpha';
@@ -40,5 +42,19 @@ describe('PhaseBannerComponent', () => {
   it('should contain a text', () => {
     const element: HTMLElement = fixture.nativeElement;
     expect(element.querySelector<HTMLSpanElement>('.govuk-phase-banner__text').textContent).toEqual('Test content');
+  });
+
+  it('should move the border to the top edge only when borderTop is set', () => {
+    expect(fixture.nativeElement.querySelector('.govuk-phase-banner').classList).not.toContain(
+      'govuk-phase-banner--border-top',
+    );
+
+    const bannerFixture = TestBed.createComponent(PhaseBannerComponent);
+    bannerFixture.componentRef.setInput('borderTop', true);
+    bannerFixture.detectChanges();
+
+    expect(bannerFixture.nativeElement.querySelector('.govuk-phase-banner').classList).toContain(
+      'govuk-phase-banner--border-top',
+    );
   });
 });

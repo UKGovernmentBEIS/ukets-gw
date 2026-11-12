@@ -42,10 +42,29 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should display sign out link when user is logged in', () => {
+  it('should display sign out button when user is logged in', () => {
     store.setIsLoggedIn(true);
     fixture.detectChanges();
-    const signOutLink = screen.getByRole('link', { name: /Sign out/i });
-    expect(signOutLink).toBeVisible();
+    const signOutButton = screen.getByRole('button', { name: /Sign out/i });
+    expect(signOutButton).toBeVisible();
+  });
+
+  it('should not display sign out button when user is logged out', () => {
+    fixture.detectChanges();
+    expect(screen.queryByRole('button', { name: /Sign out/i })).not.toBeInTheDocument();
+  });
+
+  it('should display the service name linking to the root route', () => {
+    fixture.detectChanges();
+    const serviceLink = screen.getByRole('link', { name: 'Manage your UK ETS reporting' });
+    expect(serviceLink).toHaveAttribute('href', '/');
+  });
+
+  it('should display the footer support links', () => {
+    fixture.detectChanges();
+    expect(screen.getByRole('link', { name: 'Privacy Notice' })).toHaveAttribute('href', '/privacy-notice');
+    expect(screen.getByRole('link', { name: 'Contact us' })).toHaveAttribute('href', '/contact-us');
+    expect(screen.getByRole('link', { name: 'Accessibility Statement' })).toHaveAttribute('href', '/accessibility');
+    expect(screen.getByRole('link', { name: 'UK ETS legislation' })).toHaveAttribute('href', '/legislation');
   });
 });

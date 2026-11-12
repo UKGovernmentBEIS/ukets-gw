@@ -1,41 +1,31 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  inject,
-  ViewEncapsulation,
-} from '@angular/core';
-import { AuthStore, selectUserProfile } from '@etsgw/core/auth';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { LinkDirective, PhaseBannerComponent } from '@etsgw/govuk-components';
-import { AsyncPipe, NgIf } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
-/* eslint-disable @angular-eslint/use-component-view-encapsulation */
+import { AuthStore, selectUserProfile } from '@etsgw/core/auth';
+import { PhaseBannerComponent } from '@etsgw/govuk-components';
+
+import { AppService } from '../../../app.service';
+
 @Component({
   selector: 'etsgw-phase-bar',
+  imports: [PhaseBannerComponent],
   standalone: true,
   template: `
-    <govuk-phase-banner phase="BETA">
-      <span
-        *ngIf="userProfile$ | async as user"
-        class="logged-in-user float-right"
-      >
-        You are logged in as:
-        <span class="govuk-!-font-weight-bold"
-          >{{ user.firstName }} {{ user.lastName }}</span
-        >
-      </span>
+    <govuk-phase-banner borderTop phase="Beta">
+      @if (appService.showPhaseLogin()) {
+        @if (userProfile(); as user) {
+          <span class="logged-in-user float-right">
+            You are signed in as
+            <span class="govuk-!-font-weight-bold">{{ user.firstName }} {{ user.lastName }}</span>
+          </span>
+        }
+      }
     </govuk-phase-banner>
   `,
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PhaseBannerComponent, NgIf, LinkDirective, RouterLink, AsyncPipe],
 })
 export class PhaseBarComponent {
-  userProfile$ = this.authStore
-    .rxSelect(selectUserProfile)
-    .pipe(takeUntilDestroyed(inject(DestroyRef)));
+  private readonly authStore = inject(AuthStore);
+  protected readonly appService = inject(AppService);
 
-  constructor(private readonly authStore: AuthStore) {}
+  userProfile = this.authStore.select(selectUserProfile);
 }

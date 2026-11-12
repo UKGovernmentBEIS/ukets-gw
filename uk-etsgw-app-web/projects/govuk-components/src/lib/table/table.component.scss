@@ -1,6 +1,4 @@
-@import 'govuk-frontend/dist/govuk/settings/_colours-applied.scss';
-@import 'govuk-frontend/dist/govuk/settings/measurements';
-@import 'govuk-frontend/dist/govuk/helpers/focused';
+@use 'govuk-frontend/dist/govuk/base' as govuk;
 
 [aria-sort] button,
 [aria-sort] button:hover {
@@ -21,9 +19,9 @@
 }
 
 [aria-sort] button:focus {
-  @include govuk-focused-text;
   position: relative;
   z-index: 1;
+  @include govuk.govuk-focused-text;
 }
 
 [aria-sort]:first-child button {
